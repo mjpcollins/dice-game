@@ -4,7 +4,7 @@ Dice Game simulator with AI that aims to maximise points. Project for MSc with B
 ## Introduction
 
 This dice game consists of states, actions, and rewards (or punishments). We can therefore model it as 
-a Markov Decision Process [REF].
+a Markov Decision Process (Howard, 1960).
 
 ## Extremely Simple Agents
 
@@ -25,14 +25,22 @@ All agents were tested on the same games with identical seeds.
 
 ## One Step Look Ahead
 
-One method of evaluating the next best move in a given state is to look at all possible
-outcomes for all actions you can take from that state.
+To understand how the DiceGame class worked an provide a low base line I decided to try a lazy way
+of calculating whether or not an action should be taken. 
 
-You can calculate the resulting scores for all outcomes and the probability for
-getting those scores. If, for a given action, the probability of a better outcome
-is higher than the probability of a same or worse outcome, take that action.
+I cannot find a reference to this specific method online, probably because it's a bad version of
+expected value evaluation. 
 
-This is a fairly simple algorithm and has been implemented in agents/one_step_look_ahead.py.
+We assume that the value of a next state is equal to the final score minus the reward. 
+
+For all dice roll outcomes, it is simple to calculate whether that outcome will be better or worse
+than the current state of the dice. We also know the probability of each outcome.
+
+Given our current state, for all actions I can take, I calculate the probability that action will
+lead to a better state. If any of the actions' probabilities of success is above a preset "risk factor",
+the Agent selects the one with the highest probability of success.
+
+This is a fairly simple and has been implemented in agents/one_step_look_ahead.py.
 
 You can adjust how risky the agent is by changing the risk factor. The basic risk factor I chose
 was 50%. If the probability of an action giving a better outcome is > 50%, it will take the action. 
@@ -55,12 +63,12 @@ However, the cautious agent under performs the other one step look aheads.
 ### Theory
 
 As this game can be modeled as a Markov Decision Process, there are a number of algorithms we can use
-to create a policy set that performs better than looking ahead one step. Once such method is Value Iteration [REF].
+to create a policy set that performs better than looking ahead one step. Once such method is Value Iteration (Bellman, 1957).
 
 For this, we need to calculate the value of being in a given state. For 3 dice, each with 6 sides, 
 there are 56 unique states. The value of each state is dependent on the value of all other states.
 
-The value of any given state is given by the following Bellman equation phrased as an update equation [REF]:
+The value of any given state is given by the following Bellman equation phrased as an update equation:
 
 >V<sub>k + 1</sub>(s) = max<sub>a</sub>{ &sum;<sub>s', r</sub> p(s', r | s, a) (r + &gamma;V<sub>k</sub>(s')) }
 
@@ -199,4 +207,8 @@ The Markov Decision Process agents perform identically and out perform all other
 ![Perfectionist Agent Performance](data/perf.png)
 
 ## References
+
+Howard, R., 1960. <i>Dynamic Programming and Markov Processes</i>. Cambridge: The MIT Press.
+
+Bellman, R., 1957. A Markovian Decision Process. <i>Indiana Univ. Math. J.</i> 6(4), pp.679-684.
 
