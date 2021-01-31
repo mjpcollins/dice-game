@@ -94,7 +94,7 @@ we can rewrite our version of the update equation. For simplicity, only one roll
 >
 >roll_1 = &sum;<sub>s', r</sub> p(s', r | s, roll_1)r + &gamma;&sum;<sub>s', r</sub> p(s', r | s, roll_1)V<sub>k</sub>(s'))
 >
-> &sum;<sub>s', r</sub> p(s', r | s, roll) r = 1
+> &sum;<sub>s', r</sub> p(s', r | s, roll_1) r = 1
 >
 >roll_1 = r + &gamma;&sum;<sub>s', r</sub> p(s', r | s, roll_1) V<sub>k</sub>(s') 
 >
@@ -176,7 +176,6 @@ before the max delta squared was less than theta squared.
 ## Comparison of performance
 
 Table of average game score over 100 random games. 
-
 All agents were given the same game and starting seed. 
 
 | Agent                              | Mean Score |
@@ -189,8 +188,9 @@ All agents were given the same game and starting seed.
 | MarkovDecisionProcessAgent         |  13.53     |
 | MarkovDecisionProcessAgentAdjusted |  13.53     |
 
-Histograms comparing the performance of all the agents. The PerfectionistAgent is shown on
-a separate histogram as it's scores were too low to be compared with the other agents.
+Histograms comparing the performance of all the agents are presented below. 
+The PerfectionistAgent is shown on a separate histogram as its scores were too low 
+to be compared with the other agents.
 
 The Markov Decision Process agents perform identically and out perform all other agents.
 
