@@ -33,23 +33,27 @@ def play_agent(agent_class, game, seed):
 
 
 def comparisons(iterations=1):
-    agent_names = ["OneStepLookAheadAgent",
+    agent_names = ["AlwaysHoldAgent",
+                   "PerfectionistAgent",
+                   "OneStepLookAheadAgent",
                    "RiskyAgent",
                    "CautiousAgent",
-                   "MarkovDecisionProcessAgent"]
-    total_agent_scores = [0, 0, 0, 0]
-    for _ in range(iterations):
-        seed = np.random.randint(100000)
+                   "MarkovDecisionProcessAgent",
+                   "MarkovDecisionProcessAgentAdjusted"]
+    total_agent_scores = [0 for i in range(len(agent_names))]
+    for game_round in range(iterations):
+        seed = np.random.randint(1000)
         game = DiceGame()
-        agent_scores = [play_agent(OneStepLookAheadAgent, game, seed),
+        agent_scores = [play_agent(AlwaysHoldAgent, game, seed),
+                        play_agent(PerfectionistAgent, game, seed),
+                        play_agent(OneStepLookAheadAgent, game, seed),
                         play_agent(RiskyAgent, game, seed),
                         play_agent(CautiousAgent, game, seed),
-                        play_agent(MarkovDecisionProcessAgent, game, seed)]
+                        play_agent(MarkovDecisionProcessAgent, game, seed),
+                        play_agent(MarkovDecisionProcessAgentAdjusted, game, seed)]
         total_agent_scores = [agent_scores[idx] + total_agent_scores[idx] for idx in range(len(agent_scores))]
-        print(f"OneStepLookAheadAgent: {agent_scores[0]}")
-        print(f"RiskyAgent: {agent_scores[1]}")
-        print(f"CautiousAgent: {agent_scores[2]}")
-        print(f"MarkovDecisionProcessAgent: {agent_scores[3]}")
+        for i in range(len(agent_names)):
+            print(f"{agent_names[i]}: {agent_scores[i]}")
         winners = [idx for idx in range(len(agent_scores)) if agent_scores[idx] == max(agent_scores)]
         if len(winners) > 1:
             print("Draw between")
@@ -59,10 +63,17 @@ def comparisons(iterations=1):
             winner_idx = agent_scores.index(max(agent_scores))
             print(f"Winner is {agent_names[winner_idx]} with a score of {agent_scores[winner_idx]}")
         print("\n-----------------------\n")
+        write_results(agent_scores, agent_names, game_round)
     average_agent_scores = [score / iterations for score in total_agent_scores]
     print(average_agent_scores)
     best_agent_indx = average_agent_scores.index(max(average_agent_scores))
     print(f"Best agent is {agent_names[best_agent_indx]} with an average score of {max(average_agent_scores)}")
+
+
+def write_results(results, agents, game_round):
+    with open("../data/play_results.csv", "a") as F:
+        for i in range(len(agents)):
+            F.write(f"{game_round}, {agents[i]}, {results[i]}\n")
 
 
 if __name__ == "__main__":

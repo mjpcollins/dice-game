@@ -2,3 +2,5 @@ from agents.one_step_look_ahead import OneStepLookAheadAgent
 from agents.risky_agent import RiskyAgent
 from agents.cautious_agent import CautiousAgent
 from agents.markov_decision_process_agent import MarkovDecisionProcessAgent
+from agents.markov_decision_process_agent_adjusted import MarkovDecisionProcessAgentAdjusted
+from agents.bad_agents import AlwaysHoldAgent, PerfectionistAgent

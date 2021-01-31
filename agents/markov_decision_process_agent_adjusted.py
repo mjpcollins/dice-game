@@ -1,17 +1,16 @@
 from agents.base_agent import DiceGameAgent
 
 
-class MarkovDecisionProcessAgent(DiceGameAgent):
+class MarkovDecisionProcessAgentAdjusted(DiceGameAgent):
 
     def __init__(self, game, run_iterations=True, theta=0.001, gamma=0.95):
         super().__init__(game)
         self._theta_squared = theta ** 2
         self._deltas_squared = []
         self._gamma = gamma
-        self._state_action_value_prime = {state: 0 for state in self.game.states}
+        self._state_action_value = {state: 0 for state in self.game.states}
         self._state_best_action = {state: () for state in self.game.states}
         self._next_states_dict = {state: {} for state in self.game.states}
-        self._state_action_value = self._state_action_value_prime.copy()
         self._get_all_next_states()
         self._iterations = 0
         if run_iterations:
@@ -29,14 +28,13 @@ class MarkovDecisionProcessAgent(DiceGameAgent):
         self._deltas_squared = []
         for state in self._state_action_value:
             self._update_state_best_action(state)
-        self._state_action_value = self._state_action_value_prime.copy()
         self._iterations += 1
 
     def _update_state_best_action(self, state):
         action_values = [self._calculate_action_value(action=action, state=state) for action in self.game.actions]
         best_action_value = max(action_values)
         self._deltas_squared.append((self._state_action_value[state] - best_action_value) ** 2)
-        self._state_action_value_prime[state] = best_action_value
+        self._state_action_value[state] = best_action_value
         self._state_best_action[state] = self.game.actions[action_values.index(best_action_value)]
 
     def _calculate_action_value(self, action, state):

@@ -1,16 +1,16 @@
 import numpy as np
 from unittest import TestCase
-from agents import MarkovDecisionProcessAgent
+from agents import MarkovDecisionProcessAgentAdjusted
 from dice_game import DiceGame
 
 
-class TestMarkovDecisionProcessAgent(TestCase):
+class TestMarkovDecisionProcessAgentAdjusted(TestCase):
 
     def setUp(self):
         np.random.seed(1)
         self.game = DiceGame()
-        self.agent = MarkovDecisionProcessAgent(self.game,
-                                                run_iterations=False)
+        self.agent = MarkovDecisionProcessAgentAdjusted(self.game,
+                                                        run_iterations=False)
         self.state = self.game.reset()
 
     def test_init(self):
@@ -35,8 +35,7 @@ class TestMarkovDecisionProcessAgent(TestCase):
         self.agent._gamma = 0.9
         self.agent._update_state_best_action(state=(1, 1, 2))
         self.assertEqual((0, 1, 2), self.agent._state_best_action[(1, 1, 2)])
-        self.assertEqual(0, self.agent._state_action_value[(1, 1, 2)])
-        self.assertEqual(14, self.agent._state_action_value_prime[(1, 1, 2)])
+        self.assertEqual(14, self.agent._state_action_value[(1, 1, 2)])
 
     def test_iterate_all_states_once(self):
         self.agent._iterate_all_states()
@@ -46,28 +45,28 @@ class TestMarkovDecisionProcessAgent(TestCase):
     def test_iterate_all_states_5_times(self):
         for _ in range(5):
             self.agent._iterate_all_states()
-        self.assertEqual(0.04740818980466693, max(self.agent._deltas_squared))
+        self.assertEqual(0.013878447483153854, max(self.agent._deltas_squared))
         self.assertEqual(5, self.agent._iterations)
 
     def test_iterate_until_minimal_change_01(self):
         self.agent._theta_squared = 0.1 ** 2
         self.agent._iterate_until_minimal_delta()
-        self.assertEqual(0.0039654624078090065, max(self.agent._deltas_squared))
-        self.assertEqual(7, self.agent._iterations)
+        self.assertEqual(0.002008600926252003, max(self.agent._deltas_squared))
+        self.assertEqual(6, self.agent._iterations)
 
     def test_iterate_until_minimal_change_0001(self):
         self.agent._theta_squared = 0.001 ** 2
         self.agent._iterate_until_minimal_delta()
-        self.assertEqual(6.606851379091177e-07, max(self.agent._deltas_squared))
-        self.assertEqual(15, self.agent._iterations)
+        self.assertEqual(1.6804616828459174e-07, max(self.agent._deltas_squared))
+        self.assertEqual(11, self.agent._iterations)
 
     def test_init_with_iterations(self):
-        agent = MarkovDecisionProcessAgent(self.game)
-        self.assertEqual(6.606851379091177e-07, max(agent._deltas_squared))
-        self.assertEqual(15, agent._iterations)
+        agent = MarkovDecisionProcessAgentAdjusted(self.game)
+        self.assertEqual(1.6804616828459174e-07, max(agent._deltas_squared))
+        self.assertEqual(11, agent._iterations)
 
     def test_play(self):
-        agent = MarkovDecisionProcessAgent(self.game)
+        agent = MarkovDecisionProcessAgentAdjusted(self.game)
         self.assertEqual((0, 1), agent.play((1, 1, 2)))
         self.assertEqual((0, ), agent.play((1, 3, 5)))
         self.assertEqual((0, 1, 2), agent.play((4, 4, 6)))

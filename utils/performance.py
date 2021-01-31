@@ -1,4 +1,4 @@
-from utils.optimise_gamma import game_test
+from utils.optimise_variables import game_test
 
 
 if __name__ == '__main__':
