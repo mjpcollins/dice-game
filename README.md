@@ -25,7 +25,7 @@ All agents were tested on the same games with identical seeds.
 
 ## One Step Look Ahead
 
-To understand how the DiceGame class worked an provide a low base line I decided to try a lazy way
+To understand how the DiceGame class worked and to provide a low base line I decided to try a lazy way
 of calculating whether or not an action should be taken. 
 
 I cannot find a reference to this specific method online, probably because it's a bad version of
