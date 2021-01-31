@@ -5,7 +5,7 @@ from agents import MarkovDecisionProcessAgent
 from utils.play import play_game_with_agent
 
 
-def game_test(gamma, theta):
+def game_test(gamma=0.95, theta=0.001):
 
     total_score = 0
     total_time = 0
@@ -48,5 +48,22 @@ def find_best_gamma(theta):
     print(f"Average score: {best_score}")
 
 
+def find_best_theta(gamma):
+    best_score = 0
+    best_theta = 0
+    step = 1
+
+    for theta_divider in range(1, 10, step):
+        theta = 0.1 / 10 ** theta_divider
+        score, time_of_run = game_test(gamma, theta)
+        print(f"Theta: {theta}, score: {score}, time: {time_of_run}")
+        if score > best_score:
+            print(f"New best score {score} with theta {theta}")
+            best_score = score
+            best_theta = theta
+    print(f"Best theta: {best_theta}")
+    print(f"Average score: {best_score}")
+
+
 if __name__ == '__main__':
-    find_best_gamma(theta=0.1)
+    find_best_theta(gamma=0.95)

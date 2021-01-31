@@ -5,13 +5,14 @@ class MarkovDecisionProcessAgent(DiceGameAgent):
 
     def __init__(self, game, run_iterations=True, theta=0.001, gamma=0.95):
         super().__init__(game)
+        self._theta_squared = theta ** 2
         self._gamma = gamma
         self._state_scores = {key: 0 for key in self.game.final_scores}
-        self._changes = []
-        self._largest_change = 100000.0
         self._state_best_action = {key: () for key in self.game.final_scores}
+        self._next_states_dict = {state: {} for state in self.game.states}
+        self._deltas_squared = []
         self._iterations = 0
-        self._theta = theta
+        self._get_all_next_states()
         if run_iterations:
             self._iterate_until_minimal_change()
 
@@ -19,37 +20,34 @@ class MarkovDecisionProcessAgent(DiceGameAgent):
         return self._state_best_action[state]
 
     def _iterate_until_minimal_change(self):
-        while self._largest_change > self._theta:
+        self._iterate_all_states()
+        while max(self._deltas_squared) > self._theta_squared:
             self._iterate_all_states()
 
     def _iterate_all_states(self):
+        self._deltas_squared = []
         for state in self._state_scores:
             self._update_state_best_action(state)
-        self._update_largest_change()
         self._iterations += 1
 
     def _update_state_best_action(self, state):
-        best_action = ()
-        best_action_value = -1000
-        for action in self.game.actions:
-            action_value = self._calculate_action_value(action=action,
-                                                        state=state)
-            if action_value > best_action_value:
-                best_action = action
-                best_action_value = action_value
-        self._changes.append((self._state_scores[state] - best_action_value) ** 2)
-        self._state_best_action[state] = best_action
+        action_values = [self._calculate_action_value(action=action, state=state)
+                         for action in self.game.actions]
+        best_action_value = max(action_values)
+        best_action = self.game.actions[action_values.index(best_action_value)]
+        self._deltas_squared.append((self._state_scores[state] - best_action_value) ** 2)
         self._state_scores[state] = best_action_value
+        self._state_best_action[state] = best_action
 
     def _calculate_action_value(self, action, state):
-        states, game_over, reward, probabilities = self.game.get_next_states(action=action,
-                                                                             dice_state=state)
+        states, game_over, reward, probabilities = self._next_states_dict[state][action]
         if game_over:
             return self.game.final_scores[state]
         expected_value = sum([self._state_scores[s] * p for p, s in zip(probabilities, states)])
         return reward + self._gamma * expected_value
 
-    def _update_largest_change(self):
-        self._largest_change = max(self._changes)
-        self._changes = []
-
+    def _get_all_next_states(self):
+        for state in self.game.states:
+            for action in self.game.actions:
+                self._next_states_dict[state][action] = self.game.get_next_states(action=action,
+                                                                                  dice_state=state)
